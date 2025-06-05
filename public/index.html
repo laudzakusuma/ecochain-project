@@ -673,5 +673,69 @@
         
         setTimeout(typeWriter, 1000);
     </script>
+    <script>
+  // Fetch blockchain data dari backend
+  fetch('/api/blockchain')
+    .then(response => response.json())
+    .then(data => {
+      console.log('Blockchain Data:', data);
+
+      // Tampilkan ke dalam elemen HTML
+      const container = document.createElement('div');
+      container.style.padding = '1rem';
+      container.style.background = '#111';
+      container.style.color = '#0f0';
+      container.style.marginTop = '2rem';
+      container.style.border = '1px solid #0f0';
+      container.style.fontFamily = 'monospace';
+
+      const heading = document.createElement('h2');
+      heading.textContent = '🔗 Current Blockchain Data';
+      container.appendChild(heading);
+
+      const pre = document.createElement('pre');
+      pre.textContent = JSON.stringify(data, null, 2);
+      container.appendChild(pre);
+
+      document.body.appendChild(container);
+    })
+    .catch(error => {
+      console.error('Failed to fetch blockchain data:', error);
+    });
+</script>
+<script>
+  fetch('/api/blockchain')
+    .then(res => res.json())
+    .then(data => {
+      const chain = data.chain;
+
+      const wrapper = document.createElement('div');
+      wrapper.style.display = 'flex';
+      wrapper.style.flexWrap = 'wrap';
+      wrapper.style.gap = '1rem';
+      wrapper.style.marginTop = '2rem';
+
+      chain.forEach((block, index) => {
+        const card = document.createElement('div');
+        card.style.background = '#222';
+        card.style.color = '#0f0';
+        card.style.padding = '1rem';
+        card.style.border = '1px solid #0f0';
+        card.style.borderRadius = '8px';
+        card.style.width = '300px';
+
+        card.innerHTML = `
+          <h3>🧱 Block #${index}</h3>
+          <p><strong>Timestamp:</strong> ${block.timestamp}</p>
+          <p><strong>Hash:</strong> ${block.hash.slice(0, 16)}...</p>
+          <p><strong>Previous:</strong> ${block.previousHash.slice(0, 16)}...</p>
+          <p><strong>DNA:</strong> ${JSON.stringify(block.data)}</p>
+        `;
+        wrapper.appendChild(card);
+      });
+
+      document.body.appendChild(wrapper);
+    });
+</script>
 </body>
 </html>
