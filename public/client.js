@@ -1,11 +1,11 @@
 window.addEventListener('DOMContentLoaded', () => {
-  // Inject global CSS animasi (tanpa ubah index.html)
+  // Inject global style
   const style = document.createElement('style');
   style.textContent = `
     @keyframes fadeInUp {
       from {
         opacity: 0;
-        transform: translateY(20px) scale(0.9);
+        transform: translateY(20px) scale(0.95);
       }
       to {
         opacity: 1;
@@ -13,67 +13,93 @@ window.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    .block-anim {
-      animation: fadeInUp 0.6s ease-out;
+    .eco-section {
+      padding: 4rem 2rem;
+      background: linear-gradient(to bottom, #0d0d0d, #000000);
+      color: #fff;
+      font-family: 'Segoe UI', sans-serif;
+      text-align: center;
+    }
+
+    .eco-section h2 {
+      font-size: 2rem;
+      font-weight: bold;
+      background: linear-gradient(90deg, #00ffe0, #ff00ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 2rem;
+    }
+
+    .blockchain-wrapper {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 2rem;
+    }
+
+    .block-card {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(0,255,200,0.3);
+      box-shadow: 0 0 20px rgba(0, 255, 200, 0.15);
+      border-radius: 16px;
+      padding: 1.5rem;
+      width: 320px;
+      backdrop-filter: blur(8px);
+      animation: fadeInUp 0.6s ease;
+      color: #e0fff7;
+      text-align: left;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
 
     .block-card:hover {
-      box-shadow: 0 0 15px #0f0;
-      transform: scale(1.03);
-      transition: all 0.3s ease;
+      transform: translateY(-5px) scale(1.02);
+      box-shadow: 0 0 25px rgba(0, 255, 200, 0.5);
+    }
+
+    .block-card h3 {
+      margin-bottom: 0.5rem;
+      font-size: 1.2rem;
+      color: #00ffe0;
+    }
+
+    .block-card p {
+      margin: 0.25rem 0;
+      font-size: 0.9rem;
+      word-break: break-all;
     }
   `;
   document.head.appendChild(style);
 
-  // Wrapper
-  const display = document.createElement('div');
-  display.style.padding = '2rem';
-  display.style.fontFamily = 'monospace';
-  display.style.color = '#0f0';
-  display.style.background = '#111';
-  display.innerHTML = `<h2 style="text-align:center;">🌐 Live Blockchain View</h2>`;
-  document.body.appendChild(display);
+  // Create wrapper
+  const section = document.createElement('section');
+  section.className = 'eco-section';
+  section.innerHTML = `<h2>🌐 Live Blockchain View</h2><div class="blockchain-wrapper" id="ecoChainBlocks"></div>`;
+  document.body.appendChild(section);
 
-  const chainWrapper = document.createElement('div');
-  chainWrapper.style.display = 'flex';
-  chainWrapper.style.flexWrap = 'wrap';
-  chainWrapper.style.justifyContent = 'center';
-  chainWrapper.style.gap = '1.5rem';
-  chainWrapper.style.marginTop = '2rem';
-  display.appendChild(chainWrapper);
-
+  // Fetch and render blocks
   function loadBlockchain() {
     fetch('/api/blockchain')
       .then(res => res.json())
       .then(data => {
-        chainWrapper.innerHTML = '';
+        const wrapper = document.getElementById('ecoChainBlocks');
+        wrapper.innerHTML = '';
+
         data.chain.forEach((block, i) => {
           const card = document.createElement('div');
-          card.classList.add('block-card', 'block-anim');
-          card.style = `
-            background: #1a1a1a;
-            border: 1px solid #0f0;
-            border-radius: 12px;
-            padding: 1rem;
-            width: 300px;
-            color: #0f0;
-            font-family: monospace;
-            box-shadow: 0 0 10px #0f04;
-            transition: all 0.3s ease;
-          `;
+          card.className = 'block-card';
           card.innerHTML = `
             <h3>🧱 Block #${i}</h3>
-            <p><strong>Time:</strong> ${block.timestamp}</p>
-            <p><strong>Hash:</strong> ${block.hash.slice(0, 14)}...</p>
-            <p><strong>Prev:</strong> ${block.previousHash.slice(0, 14)}...</p>
-            <p><strong>DNA:</strong> ${JSON.stringify(block.data)}</p>
+            <p><strong>🕒 Time:</strong> ${block.timestamp}</p>
+            <p><strong>🔗 Hash:</strong> ${block.hash.slice(0, 16)}...</p>
+            <p><strong>⬅ Prev:</strong> ${block.previousHash.slice(0, 16)}...</p>
+            <p><strong>🧬 DNA:</strong><br>${JSON.stringify(block.data)}</p>
           `;
-          chainWrapper.appendChild(card);
+          wrapper.appendChild(card);
         });
       });
   }
 
-  // Load first time + refresh every 5s
+  // Initial & interval
   loadBlockchain();
   setInterval(loadBlockchain, 5000);
 });
